@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF417</title>
+    <script type="text/javascript" src="vendor/bcmath-min.js"></script>
+    <script type="text/javascript" src="vendor/pdf417.js"></script>
+    <style>
+        input {
+            width: 250px;
+        }
+      </style>
+</head>
+<body>
+    <form action="javascript:generate()" id="form">
+        <label for="naziv-platitelja">Naziv platitelja</label><br>
+        <input name="naziv-platitelja" type="text" value=""><br><br>
+
+        <label for="adresa-platitelja">Adresa platitelja</label><br>
+        <input name="adresa-platitelja" type="text" value=""><br><br>
+
+        <label for="mjesto-platitelja">Poštanski broj i mjesto platitelja</label><br>
+        <input name="mjesto-platitelja" type="text" value=""><br><br>
+
+        <label for="naziv-primatelja">Naziv primatelja</label><br>
+        <input name="naziv-primatelja" type="text" value="Herman Zvonimir Došilović"><br><br>
+
+        <label for="adresa-primatelja">Adresa primatelja</label><br>
+        <input name="adresa-primatelja" type="text" value=""><br><br>
+
+        <label for="mjesto-primatelja">Poštanski broj i mjesto primatelja</label><br>
+        <input name="mjesto-primatelja" type="text" value=""><br><br>
+
+        <label for="iznos">Iznos</label><br>
+        <input name="iznos" type="text" value="100.00"> HRK<br><br>
+
+        <label for="iban">IBAN primatelja</label><br>
+        <input name="iban" type="text" value="HR1623600003243990385"><br><br>
+
+        <label for="model">Model poziva na broj primatelja</label><br>
+        <input name="model" type="text" value=""><br><br>
+
+        <label for="poziv-na-broj">Poziv na broj primatelja</label><br>
+        <input name="poziv-na-broj" type="text" value=""><br><br>
+
+        <label for="opis-placanja">Opis plaćanja</label><br>
+        <input name="opis-placanja" type="text" value="Uplata na račun"><br>
+
+        <label for=""></label><br>
+        <button type="submit">Generiraj bar kôd</button>
+    </form>
+
+    <div id="barcode"></div>
+
+    <script type="text/javascript">
+        function generate() {
+            let formData = new FormData(document.getElementById("form"));
+
+            let nazivPlatitelja = formData.get('naziv-platitelja');
+            let adresaPlatitelja = formData.get('adresa-platitelja');
+            let mjestoPlatitelja = formData.get('mjesto-platitelja');
+
+            let nazivPrimatelja = formData.get('naziv-primatelja');
+            let adresaPrimatelja = formData.get('adresa-primatelja');
+            let mjestoPrimatelja = formData.get('mjesto-primatelja');
+
+            let iznos = formData.get('iznos');
+
+            let iban = formData.get('iban');
+            let model = formData.get('model');
+            let pozivNaBroj = formData.get('poziv-na-broj');
+            let sifraNamjene = "";
+
+            let opisPlacanja = formData.get('opis-placanja');
+
+            let textToEncode =
+            (
+                `HRVHUB30` + "\n" +
+                `HRK` + "\n" +
+                `${String(parseFloat(iznos).toFixed(2)).replaceAll(".", "").replaceAll(",", "").padStart(15, "0")}` + "\n" +
+                `${nazivPlatitelja}` + "\n" +
+                `${adresaPlatitelja}` + "\n" +
+                `${mjestoPlatitelja}` + "\n" +
+                `${nazivPrimatelja}` + "\n" +
+                `${adresaPrimatelja}` + "\n" +
+                `${mjestoPrimatelja}` + "\n" +
+                `${iban}` + "\n" +
+                `${model}` + "\n" +
+                `${pozivNaBroj}` + "\n" +
+                `${sifraNamjene}` + "\n" +
+                `${opisPlacanja}` + "\n"
+            ).trim();
+            console.log(textToEncode);
+
+            PDF417.init(textToEncode);
+
+            var barcode = PDF417.getBarcodeArray();
+
+            // block sizes (width and height) in pixels
+            var bw = 2;
+            var bh = 2;
+
+            // create canvas element based on number of columns and rows in barcode
+            var container = document.getElementById('barcode');
+            if (container.firstChild !== null) {
+                container.removeChild(container.firstChild);
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = bw * barcode['num_cols'];
+            canvas.height = bh * barcode['num_rows'];
+            container.appendChild(canvas);
+
+            var ctx = canvas.getContext('2d');
+
+            // graph barcode elements
+            var y = 0;
+            // for each row
+            for (var r = 0; r < barcode['num_rows']; ++r) {
+                var x = 0;
+                // for each column
+                for (var c = 0; c < barcode['num_cols']; ++c) {
+                    if (barcode['bcode'][r][c] == 1) {
+                        ctx.fillRect(x, y, bw, bh);
+                    }
+                    x += bw;
+                }
+                y += bh;
+            }
+        }
+    </script>
+</body>
+</html>
