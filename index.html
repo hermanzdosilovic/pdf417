@@ -36,7 +36,7 @@
         <input name="mjesto-primatelja" type="text" value=""><br><br>
 
         <label for="iznos">Iznos</label><br>
-        <input name="iznos" type="text" value="100.00"> HRK<br><br>
+        <input name="iznos" type="text" value="20.00"> EUR<br><br>
 
         <label for="iban">IBAN primatelja</label><br>
         <input name="iban" type="text" value="HR1623600003243990385"><br><br>
@@ -80,7 +80,7 @@
             let textToEncode =
             (
                 `HRVHUB30` + "\n" +
-                `HRK` + "\n" +
+                `EUR` + "\n" +
                 `${String(parseFloat(iznos).toFixed(2)).replaceAll(".", "").replaceAll(",", "").padStart(15, "0")}` + "\n" +
                 `${nazivPlatitelja}` + "\n" +
                 `${adresaPlatitelja}` + "\n" +
